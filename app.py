@@ -70,8 +70,7 @@ try:
         layout = json.load(f)
 except:
     layout = {}
-def open_browser():
-    webbrowser.open("http://127.0.0.1:5000")
+
 
 
 def safe_filename(name):
