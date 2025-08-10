@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>🧼 Background Editor</title>
+
+  <!-- Cropper.js CDN -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f6f9fc;
+      color: #333;
+    }
+
+    header {
+      background: #ffffff;
+      padding: 20px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 15px;
+      justify-content: space-between;
+    }
+
+    .btn {
+      background: #007bff;
+      color: white;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .btn:hover { background: #0056b3; }
+    .btn-secondary { background: #28a745; }
+
+    h2 { padding: 20px; }
+
+    .section { padding: 20px; }
+
+    .grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+
+    .box {
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      padding: 10px;
+      width: 150px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      position: relative;
+    }
+
+    .box img {
+      width: 100%;
+      border-radius: 3px;
+      cursor: pointer;
+    }
+
+    .controls {
+      margin-top: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    input[type="color"] {
+      border: none;
+      width: 30px;
+      height: 30px;
+      cursor: pointer;
+      background: none;
+    }
+
+    input[type="file"] {
+      padding: 5px;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <label>🎨 BG Color: <input type="color" id="bgColor" value="#ffffff"></label>
+  <input type="file" id="photos" name="photos" multiple accept="image/*">
+  <button class="btn" id="removeBtn">🧹 Remove Background</button>
+  <button class="btn btn-secondary" id="downloadAll" style="display:none;">📦 Download All</button>
+</header>
+
+<h2>📤 Uploaded Preview</h2>
+<div class="section">
+  <div id="preview" class="grid"></div>
+</div>
+
+<h2>✅ Processed Images</h2>
+<div class="section">
+  <div id="processed" class="grid"></div>
+</div>
+
+<script>
+const preview = document.getElementById("preview");
+const processed = document.getElementById("processed");
+const bgColor = document.getElementById("bgColor");
+const removeBtn = document.getElementById("removeBtn");
+const downloadAll = document.getElementById("downloadAll");
+const photosInput = document.getElementById("photos");
+let fileMap = [];
+
+photosInput.addEventListener("change", () => {
+  preview.innerHTML = "";
+  processed.innerHTML = "";
+  fileMap = [];
+
+  Array.from(photosInput.files).forEach((file, index) => {
+    const box = document.createElement("div");
+    box.className = "box";
+
+    const img = document.createElement("img");
+    img.src = URL.createObjectURL(file);
+    img.alt = file.name;
+
+    const overlay = document.createElement("div");
+    overlay.className = "overlay";
+    overlay.innerText = "Processing...";
+    overlay.style.position = "absolute";
+    overlay.style.top = 0;
+    overlay.style.left = 0;
+    overlay.style.width = "100%";
+    overlay.style.height = "100%";
+    overlay.style.background = "rgba(255,255,255,0.8)";
+    overlay.style.display = "none";
+    overlay.style.alignItems = "center";
+    overlay.style.justifyContent = "center";
+    overlay.style.fontWeight = "bold";
+    overlay.style.fontSize = "14px";
+
+    box.appendChild(img);
+    box.appendChild(overlay);
+    preview.appendChild(box);
+
+    fileMap.push({ file, box, overlay });
+  });
+});
+
+
+removeBtn.addEventListener("click", () => {
+  if (!fileMap.length) {
+    alert("Please select images first.");
+    return;
+  }
+
+  const data = new FormData();
+  fileMap.forEach(({ file }) => {
+    data.append("photos", file);
+  });
+
+  // Show loading overlays
+  fileMap.forEach(({ overlay }) => overlay.style.display = "flex");
+
+  fetch("/process", { method: "POST", body: data })
+    .then(r => r.json())
+    .then(res => {
+      preview.innerHTML = "";
+      processed.innerHTML = "";
+      res.processed.forEach(fname => {
+        addImageBlock(fname);
+      });
+      downloadAll.style.display = "inline-block";
+    });
+});
+
+
+function addImageBlock(fname) {
+  const box = document.createElement("div");
+  box.className = "box";
+
+  const img = document.createElement("img");
+const pngName = fname;
+const jpgName = fname.replace(".png", ".jpg");
+img.src = `/static/cleaned/${pngName}`;
+img.alt = jpgName;
+
+img.onload = () => {
+  picker.oninput(); // recolor after load
+};
+
+
+  const picker = document.createElement("input");
+  picker.type = "color";
+  picker.value = bgColor.value;
+
+  picker.oninput = () => {
+    fetch("/recolor", {
+      method: "POST",
+      body: new URLSearchParams({ filename: fname, color: picker.value })
+    })
+    .then(r => r.json())
+    .then(res => {
+      img.src = `/static/cleaned/${res.updated}?t=${Date.now()}`;
+    });
+  };
+
+  const dl = document.createElement("button");
+  dl.textContent = "⬇️";
+  dl.className = "btn";
+  dl.style.padding = "3px 8px";
+  dl.onclick = () => window.open(`/download/${jpgName}`, "_blank");
+
+  const crop = document.createElement("button");
+  crop.textContent = "✂️";
+  crop.className = "btn";
+  crop.style.padding = "3px 8px";
+  crop.onclick = () => openCropTool(img.src, jpgName);
+
+  const del = document.createElement("button");
+  del.textContent = "🗑️";
+  del.className = "btn";
+  del.style.padding = "3px 8px";
+  del.onclick = () => box.remove();
+
+  const controls = document.createElement("div");
+  controls.className = "controls";
+  controls.appendChild(picker);
+  controls.appendChild(dl);
+  controls.appendChild(crop);
+  controls.appendChild(del);
+
+  box.appendChild(img);
+  box.appendChild(controls);
+  processed.appendChild(box);
+}
+
+
+function openCropTool(imageUrl, filename) {
+  const modal = document.createElement("div");
+  modal.style.position = "fixed";
+  modal.style.top = 0;
+  modal.style.left = 0;
+  modal.style.width = "100vw";
+  modal.style.height = "100vh";
+  modal.style.background = "rgba(0,0,0,0.7)";
+  modal.style.display = "flex";
+  modal.style.justifyContent = "center";
+  modal.style.alignItems = "center";
+  modal.style.zIndex = 9999;
+
+  const wrapper = document.createElement("div");
+  wrapper.style.background = "#fff";
+  wrapper.style.padding = "20px";
+  wrapper.style.borderRadius = "8px";
+  wrapper.style.width = "500px";          // Fixed modal width
+  wrapper.style.height = "auto";
+  wrapper.style.maxHeight = "90vh";
+  wrapper.style.overflow = "auto";
+  wrapper.style.boxSizing = "border-box";
+
+  wrapper.style.textAlign = "center";
+
+  const img = document.createElement("img");
+  img.src = imageUrl;
+  img.style.maxWidth = "500px";
+  img.style.width = "100%";
+  img.style.height = "auto";
+  img.style.border = "1px solid #ccc";
+
+  wrapper.appendChild(img);
+
+  const cropBtn = document.createElement("button");
+  cropBtn.innerText = "Crop & Download";
+  cropBtn.className = "btn";
+  cropBtn.style.margin = "10px";
+
+  const closeBtn = document.createElement("button");
+  closeBtn.innerText = "❌ Close";
+  closeBtn.className = "btn";
+  closeBtn.style.margin = "10px";
+  closeBtn.onclick = () => document.body.removeChild(modal);
+
+  wrapper.appendChild(cropBtn);
+  wrapper.appendChild(closeBtn);
+  modal.appendChild(wrapper);
+  document.body.appendChild(modal);
+
+  const cropper = new Cropper(img, {
+    viewMode: 1,
+    movable: true,
+    zoomable: true,
+    scalable: false,
+    rotatable: false,
+    autoCropArea: 0.8,
+    responsive: true
+  });
+
+  cropBtn.onclick = () => {
+    const canvas = cropper.getCroppedCanvas({ width: 600, height: 800 });
+    canvas.toBlob(blob => {
+      const link = document.createElement("a");
+      link.download = "cropped_" + filename;
+      link.href = URL.createObjectURL(blob);
+      link.click();
+    }, "image/jpeg");
+    document.body.removeChild(modal);
+  };
+}
+
+bgColor.addEventListener("input", () => {
+  document.querySelectorAll("#processed .box").forEach(box => {
+    const picker = box.querySelector("input[type=color]");
+    const img = box.querySelector("img");
+    const originalName = img.alt.replace(".jpg", ".png");
+
+    picker.value = bgColor.value;
+
+    fetch("/recolor", {
+      method: "POST",
+      body: new URLSearchParams({
+        filename: originalName,
+        color: bgColor.value
+      })
+    })
+    .then(r => r.json())
+    .then(res => {
+      img.src = `/static/cleaned/${res.updated}?t=${Date.now()}`;
+    });
+  });
+});
+
+downloadAll.addEventListener("click", () => {
+  window.open("/download-all", "_blank");
+});
+</script>
+
+</body>
+</html>

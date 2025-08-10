@@ -1,0 +1,167 @@
+📝 User Guide – ID Card Generator
+1. 🧩 Layout Editor
+Step 1: Prepare the 'Photos' Folder
+
+Create a folder named Photos. Inside it, if needed, create subfolders like qrcode, signature, and barcode.
+
+Place all images inside these folders named as 1.jpg, 2.jpg, 3.jpg, etc.
+
+The image name must match the Roll No. in the CSV file.
+
+Step 2: Add the CSV File
+
+The CSV file must be named students.csv. Its structure should be like this:
+
+css
+Copy
+Edit
+Roll No,Name,Class,Address,Mobile No
+1,Amit Sharma,10-A,A-12 sagar avenue GST Road,989xxxxx0
+2,Neha Verma,9-B,10 Maruti Society,999xxxxx2
+3,Ravi Kumar,8-C,A-1 Ramnagar,97xxxxxxx5
+4,Saila Singh,11-B,Street No 2,77xxxxxxx4
+The first column must always be Roll No, which links each student to their corresponding photo (1.jpg, 2.jpg, etc.).
+
+After selecting your CSV file, click Upload. Once done, you may delete it.
+
+Step 3: Upload Template
+
+Upload your ID card design in JPG format (300 DPI) using the Template button.
+
+The template should be in actual ID card size.
+
+Step 4: Add Fields
+
+Click Add Field to create fields like photos and text.
+
+For photo fields, type = image. You can customize:
+
+Border (color/thickness)
+
+Rounded corners
+
+For text fields, use the same name as the CSV column (e.g., Name, Class, etc.).
+
+Step 5: Save Layout
+
+Click the Save Layout button to save your field positions and template setup.
+
+Step 6: Preview
+
+Click the Preview button to view a sample card on the right side.
+
+Use Download Sample to download a preview card.
+
+Step 7: Final Download
+
+If everything looks good in the preview, click Download Cards to export:
+
+Individual cards
+
+A4-sized sheets of cards
+
+2. 🧼 Background Remover
+This tool lets you remove backgrounds from multiple photos at once.
+
+You can crop the image and apply a solid or gradient background color.
+
+3. 📸 Camera Photo
+Use your webcam to capture photos directly.
+
+The system auto-crops and centers the face in the frame.
+
+
+
+
+📘 User Guide – ID Card Generator
+🧩 1. Layout Editor (लेआउट एडिटर)
+📁 Step 1: Photos Folder तैयार करें
+🔹 Photos नाम का एक फोल्डर बनाएं
+🔹 ज़रूरत हो तो इसके अंदर 3 सब-फोल्डर भी बना सकते हैं:
+
+qrcode/ 📷
+
+signature/ ✍️
+
+barcode/ 🧾
+
+👉 हर फोटो का नाम 1.jpg, 2.jpg, 3.jpg... इस सीरीज़ में होना चाहिए।
+CSV फाइल में दिया गया Roll No. ही फाइल नाम से मैच किया जाएगा।
+
+उदाहरण:
+
+markdown
+Copy
+Edit
+Photos/
+├── 1.jpg
+├── 2.jpg
+├── qrcode/
+│   ├── 1.jpg
+│   └── 2.jpg
+├── signature/
+│   ├── 1.jpg
+├── barcode/
+    └── 1.jpg
+📌 फिर "📁 Choose Photos" बटन पर क्लिक करें → "Upload" दबाएं → Folder upload हो जाएगा
+✅ काम पूरा होने के बाद फोटो delete करना न भूलें।
+
+📄 Step 2: CSV फ़ाइल तैयार करें
+🔸 CSV का नाम हमेशा students.csv ही रखें।
+🔸 Format ऐसा रखें:
+
+css
+Copy
+Edit
+Roll No,Name,Class,Address,Mobile No
+1,Amit Sharma,10-A,A-12 Sagar Avenue GST Road,989xxxxx0
+2,Neha Verma,9-B,10 Maruti Society,999xxxxx2
+3,Ravi Kumar,8-C,A-1 Ramnagar,97xxxxxxx5
+4,Saila Singh,11-B,Street No. 2,77xxxxxxx4
+✅ पहली column में Roll No. दें — वही number फ़ोटो नाम से match होगा
+✅ CSV की बाकी fields आप अपनी जरूरत के अनुसार बढ़ा सकते हैं
+🔍 Roll No 1 के लिए 1.jpg फोटो, Roll No 2 के लिए 2.jpg, आदि
+
+📌 "📄 Choose CSV" → "Upload" दबाएं → CSV file upload हो जाएगी
+✅ काम पूरा होने के बाद फाइल delete कर देना बेहतर रहेगा।
+
+🎨 Step 3: Template Upload करें
+🖼 जो भी ID Card का डिज़ाइन है, उसे JPG format में 300 DPI resolution के साथ upload करें।
+⚠️ Template का size actual ID size के अनुसार ही होना चाहिए।
+🔘 "Template" बटन से upload करें।
+
+✏️ Step 4: Field जोड़ें
+➕ "Add Field" बटन पर क्लिक करके ज़रूरी fields जोड़ें:
+
+अगर फोटो दिखाना है: field का size set करें और Type = image चुनें
+
+📏 Border देना हो तो: border thickness, corner radius, और color सेट करें
+
+✍️ Text fields के लिए: CSV में जो heading है, वही field name में दें (जैसे Name, Class, Mobile No.)
+
+💡 हर field को आप mouse से कार्ड पर खींचकर सही जगह set कर सकते हैं।
+
+💾 Step 5: Save Layout
+🧷 "Save Layout" बटन पर क्लिक करें।
+यह आपके डिज़ाइन का JSON फ़ॉर्मेट में layout बना देगा।
+
+🔍 Step 6: Preview
+👁 "Preview" बटन पर क्लिक करें — आपको साइड में कार्ड का live preview दिखेगा
+📥 "Download Sample" से sample ID card को डाउनलोड भी कर सकते हैं।
+
+🖨 Step 7: Final Download
+📤 "Download" बटन दबाएं:
+आपको दो तरह की files मिलेंगी:
+
+✅ Single card images
+
+✅ A4 size sheets में set की गई JPG file (printing के लिए ready)
+
+🎭 2. Background Remover
+🖼 यहाँ आप एक साथ कई फोटो का background हटा सकते हैं
+✂️ साथ ही crop करके चेहरे को अच्छे से center में भी रख सकते हैं
+🎨 Optionally background color या gradient भी जोड़ सकते हैं।
+
+📸 3. Camera Photo
+📷 आप सीधे software में वेबकैम से live photo खींच सकते हैं
+🧍 Face detection के साथ crop automatic हो जाता है।

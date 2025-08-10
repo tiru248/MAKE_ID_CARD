@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Project Launcher</title>
+  <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}">
+
+  <style>
+    body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(120deg, #f6f9fc, #e9f0ff);
+  color: #333;
+  text-align: center;
+  padding-top: 100px;
+  margin: 0;
+}
+
+h1, h2, h3 {
+  color: #2c3e50;
+  margin-bottom: 10px;
+}
+
+button {
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: #007bff;
+  border: none;
+  border-radius: 6px;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+input[type="color"],
+input[type="number"],
+input[type="text"],
+select {
+  padding: 6px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin: 5px;
+  font-size: 14px;
+}
+
+input[type="range"] {
+  width: 150px;
+}
+
+  </style>
+</head>
+<body>
+  <h1>📂 Open Your Tool</h1>
+  <button onclick="window.open('/layout', '_blank')">🧾 Layout Editor</button>
+  <button onclick="window.open('/clean', '_blank')">🧹 Background Remover</button>
+  <button onclick="window.open('/camera', '_blank')">📸 Camera Photo</button>
+   <button onclick="window.location.href='{{ url_for('download_guide') }}'">
+    📥 Download User Guide
+</button>
+
+
+
+</body>
+</html>
