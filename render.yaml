@@ -2,8 +2,9 @@ services:
   - type: web
     name: make-id-card
     env: python
-    buildCommand: |
-      apt-get update && apt-get install -y libgl1 libglib2.0-0
-      pip install --upgrade pip
-      pip install -r requirements.txt
-    startCommand: python app.py
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.9.13
