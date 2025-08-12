@@ -16,3 +16,4 @@ RUN pip install -r requirements.txt
 EXPOSE $PORT
 
 CMD ["sh", "-c", "gunicorn --bind 0.0.0.0:$PORT app:app"]
+
