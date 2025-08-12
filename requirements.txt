@@ -5,3 +5,4 @@ numpy
 Pillow
 beautifulsoup4
 mediapipe
+rembg
