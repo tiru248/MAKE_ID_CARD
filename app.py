@@ -84,9 +84,6 @@ def safe_filename(name):
     return name
 
 
-@app.route('/')
-def hello():
-    return 'Hello, world!'
 
 @app.route("/")
 def launcher():
@@ -945,7 +942,8 @@ def create_zip_response(folder_name, zip_filename):
         
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8080)
+    port = int(os.environ.get("PORT", 8080))
+    app.run(host="0.0.0.0", port=port)
 
 
 
