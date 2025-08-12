@@ -22,6 +22,9 @@ import itertools
 from flask import after_this_request
 from werkzeug.utils import secure_filename
 
+
+app = Flask(__name__)
+
 os.environ["NUMBA_DISABLE_CACHE"] = "1"
 import os
 os.environ["NUMBA_CACHE_DIR"] = os.path.join(os.getcwd(), "numba_cache")
@@ -79,6 +82,12 @@ def safe_filename(name):
     name = os.path.splitext(name)[0]
     name = re.sub(r'[^\w\-_.]', '_', name)
     return name
+
+
+@app.route('/')
+def hello():
+    return 'Hello, world!'
+
 @app.route("/")
 def launcher():
     return render_template("launcher.html")
