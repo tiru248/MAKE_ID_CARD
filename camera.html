@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>📸 Camera Capture</title>
+  <style>
+    :root {
+      --bg1: #1e3c72;
+      --bg2: #2a5298;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, var(--bg1), var(--bg2));
+      min-height: 100vh;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+    }
+    header {
+      padding: 20px;
+      text-align: center;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 32px;
+      text-shadow: 1px 1px 5px #000;
+    }
+    .container {
+      flex: 1;
+      display: flex;
+      gap: 20px;
+      padding: 20px;
+      flex-wrap: wrap;
+    }
+    .left, .right {
+      background: rgba(255,255,255,0.08);
+      border-radius: 12px;
+      padding: 20px;
+      backdrop-filter: blur(2px);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    }
+    .left {
+      flex: 0 0 360px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .right {
+      flex: 1;
+      overflow-y: auto;
+      min-width: 300px;
+    }
+    video, canvas {
+      width: 320px;
+      height: 426px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      background: #000;
+      margin-bottom: 15px;
+    }
+    .btn-group {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    button {
+      padding: 10px 16px;
+      font-size: 16px;
+      background: #00b894;
+      color: #fff;
+      border: 0;
+      border-radius: 8px;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+      transition: transform .15s, background .2s;
+    }
+    button:hover {
+      background: #00a383;
+      transform: scale(1.03);
+    }
+    h2 {
+      margin-top: 0;
+      color: #fff;
+    }
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+      gap: 12px;
+    }
+    .photo-box {
+      background: #ffffff;
+      border-radius: 8px;
+      overflow: hidden;
+      position: relative;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+      width: 100px;
+      height: 133px;
+    }
+    .photo-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .photo-box button {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      background: rgba(255,0,0,0.9);
+      color: #fff;
+      border: 0;
+      border-radius: 4px;
+      padding: 4px 6px;
+      cursor: pointer;
+      font-size: 13px;
+    }
+    @media (max-width: 900px) {
+      .container {
+        flex-direction: column;
+      }
+      .left {
+        align-self: center;
+        flex: none;
+        width: 100%;
+        max-width: 360px;
+      }
+      .right {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>📷 Capture & Preview</h1>
+  </header>
+
+  <div class="container">
+    <div class="left">
+      <video id="video" autoplay playsinline></video>
+      <canvas id="canvas" width="600" height="800" style="display:none;"></canvas>
+
+      <div class="btn-group">
+        <button id="takeBtn">📸 Take Photo</button>
+        <button onclick="window.location.href='/download-photos'">⬇️ Download All (ZIP)</button>
+      </div>
+    </div>
+
+    <div class="right">
+      <h2>Captured Photos</h2>
+      <div id="gallery" class="gallery-grid"></div>
+    </div>
+  </div>
+
+  <script>
+    const video = document.getElementById("video");
+    const canvas = document.getElementById("canvas");
+    const ctx = canvas.getContext("2d");
+    const takeBtn = document.getElementById("takeBtn");
+    const gallery = document.getElementById("gallery");
+
+    navigator.mediaDevices.getUserMedia({ video: true })
+      .then(stream => {
+        video.srcObject = stream;
+      });
+
+    takeBtn.addEventListener("click", async () => {
+      if (!video.videoWidth) {
+        await new Promise(res => video.onloadedmetadata = res);
+      }
+
+      const videoRatio = video.videoWidth / video.videoHeight;
+      const canvasRatio = canvas.width / canvas.height;
+
+      let sx, sy, sw, sh;
+      if (videoRatio > canvasRatio) {
+        sh = video.videoHeight;
+        sw = sh * canvasRatio;
+        sx = (video.videoWidth - sw) / 2;
+        sy = 0;
+      } else {
+        sw = video.videoWidth;
+        sh = sw / canvasRatio;
+        sx = 0;
+        sy = (video.videoHeight - sh) / 2;
+      }
+
+      ctx.drawImage(video, sx, sy, sw, sh, 0, 0, canvas.width, canvas.height);
+      const data = canvas.toDataURL("image/jpeg", 1.0);
+
+      const res = await fetch("/save-photo", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ image: data })
+      });
+      const json = await res.json();
+      if (json.filename) {
+        addPreview(json.filename);
+      } else {
+        alert("Failed to save photo.");
+      }
+    });
+
+    function addPreview(filename) {
+      const box = document.createElement("div");
+      box.className = "photo-box";
+
+      const img = document.createElement("img");
+      img.src = "/captured/" + filename.split("/").pop() + "?t=" + Date.now();
+
+
+
+      const del = document.createElement("button");
+      del.innerText = "🗑️";
+      del.onclick = () => {
+        fetch(`/delete-photo?filename=${encodeURIComponent(filename)}`)
+          .then(() => box.remove());
+      };
+
+      box.appendChild(img);
+      box.appendChild(del);
+      gallery.appendChild(box);
+    }
+  </script>
+</body>
+</html>

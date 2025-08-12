@@ -1,0 +1,524 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+}
+
+.field {
+  position: absolute;
+  border: 1px dashed #666;
+  background-color: rgba(255, 255, 255, 0.5);
+  padding: 2px;
+  color: #000;
+  cursor: move; 
+  box-sizing: border-box;
+  user-select: none;
+  overflow: hidden;
+  text-align: left;
+  font-size: 16px;
+  font-family: Arial, sans-serif;
+}
+.field.photo {
+  box-sizing: content-box;
+  position: absolute;
+  background-color: white;
+  padding: 0;
+  margin: 0;
+}
+.container {
+  display: flex;
+  flex-direction: row;
+  height: calc(90vh - 60px); /* ya jitna upar ka height ho */
+}
+
+#canvasArea {
+  flex: 1;
+  padding: 10px;
+  background-color: #e9f1ff;
+  overflow: auto;
+}
+
+#canvas {
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  position: relative;
+}
+
+.top-controls {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  background-color: #f0f0f0;
+  border-bottom: 1px solid #ccc;
+  font-size: 14px; /* Chhota font */
+}
+
+.top-controls label {
+  font-size: 14px;
+  min-width: 70px;
+}
+
+.top-controls input[type="color"],
+.top-controls input[type="number"],
+.top-controls select {
+  padding: 6px;
+  font-size: 14px;
+  height: 34px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  min-width: 80px;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+#borderThickness,
+#borderRadius {
+  height: 28px;
+  padding: 4px 6px;
+  font-size: 14px;
+  width: 60px;
+}
+
+.top-controls button,
+.top-controls .upload-btn {
+  padding: 4px 8px;
+  font-size: 14px;
+  border: none;
+  border-radius: 6px;
+  background-color: #395e88;
+  color: white;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.2s;
+}
+
+.top-controls button:hover,
+.top-controls .upload-btn:hover {
+  background-color: #555e70;
+}
+
+.top-controls .file-name {
+  font-size: 14px;
+  color: #444;
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 📱 Mobile Responsiveness */
+/* @media (max-width: 768px) {
+  .top-controls {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .top-controls label {
+    width: 100%;
+  }
+
+  .top-controls input,
+  .top-controls button,
+  .top-controls select {
+    width: 100%;
+  }
+
+  .top-controls .file-name {
+    max-width: 100%;
+  }
+} */
+
+
+
+
+/* Sidebar wrapper */
+.sidebar {
+  width: 200px;
+  padding: 12px;
+  background: #ffffff;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.05);
+  box-sizing: border-box;
+  border-radius: 8px 0 0 8px;
+  overflow-y: auto;
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+}
+
+.sidebar h2 {
+  margin-top: 0;
+  font-size: 14px;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.sidebar label {
+  display: block;
+  margin-top: 10px;
+  font-size: 14px;
+  color: #555;
+}
+
+.sidebar input,
+.sidebar select {
+  width: 100%;
+  margin-top: 4px;
+  padding: 6px 6px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+.sidebar input[type="number"] {
+  min-width: 0;
+}
+
+.cmyk-block {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.cmyk-block label,
+.cmyk-block input {
+  font-size: 14px;
+  width: 100%;
+}
+
+#cmykColorPreview {
+  grid-column: span 2;
+  width: 100%;
+  height: 15px;
+  margin-top: 2px;
+  background: #000;
+  border-radius: 3px;
+  border: 1px solid #ddd;
+}
+
+
+.buttons {
+  margin-top: 3px;
+  margin-left: 15px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.buttons button {
+  padding: 4px 6px;
+  font-size: 14px;
+  border: none;
+  border-radius: 4px;
+  background: #353432;
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.buttons button:hover {
+  background: rgb(97, 96, 94);
+}
+
+
+.buttons button:active {
+  background: #8b8d03;
+}
+
+.buttons button i {
+  font-style: normal;
+}
+.font-style-group {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.font-size-wrap {
+  flex: 1;
+}
+
+.font-size-wrap input {
+  width: 100%;
+  padding: 4px 6px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+.style-buttons {
+  display: flex;
+  gap: 6px;
+}
+
+.style-buttons button {
+  padding: 4px 6px;
+  font-size: 14px;
+  border: none;
+  border-radius: 4px;
+  background: #3a495a;
+  color: #fff;
+  cursor: pointer;
+  height: 30px;
+}
+
+.style-buttons button:hover {
+  background: #465669;
+}
+
+
+
+#pdfPreviewContainer {
+  display: none;
+  position: fixed;
+  top: 150px;
+  right: 60px;
+  width: 320px;
+  height: 520px;
+  border: 2px solid #444;
+  background: white;
+  z-index: 9999;
+  box-shadow: 0 0 15px rgba(0,0,0,0.3);
+  padding: 5px;
+  overflow: hidden;
+}
+
+#pdfPreview {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;   /* ✅ This makes sure image fits inside */
+  display: block;
+}
+
+
+
+
+
+
+#closePreview {
+  background: #ff5c5c;
+  border: none;
+  color: white;
+  padding: 5px 10px;
+  font-size: 16px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+
+
+
+
+
+/* Dropdown container */
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+/* Main dropdown button */
+.dropbtn {
+  background: linear-gradient(135deg, #854804, #ff0000);
+  color: white;
+  padding: 8px 14px;
+  font-size: 14px;
+  font-weight: 500;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.dropbtn:hover {
+  opacity: 0.9;
+}
+
+/* Dropdown content box */
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #ffffff;
+  min-width: 160px;
+  border-radius: 6px;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+  z-index: 1;
+  overflow: hidden;
+  margin-top: 4px;
+}
+
+/* Individual links */
+.dropdown-content a {
+  color: #333;
+  padding: 10px 16px;
+  text-decoration: none;
+  display: block;
+  font-size: 13px;
+  transition: background 0.2s;
+}
+
+.dropdown-content a:hover {
+  background-color: #f2f2f2;
+}
+
+/* Show on hover */
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+
+
+
+
+
+.download-sample-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+#loader {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  display: inline-block;
+}
+
+.loader-outer, .loader-inner {
+  position: absolute;
+  border: 4px solid transparent;
+  border-radius: 50%;
+}
+
+.loader-outer {
+  width: 50%;
+  height: 50%;
+  border-top-color: #068121;
+  animation: spin 1s linear infinite;
+}
+
+/* By default hidden */
+#loader {
+  display: none;
+  position: relative;
+  width: 40px;
+  height: 40px;
+}
+
+.loader-outer,
+.loader-inner {
+  position: absolute;
+  border: 3px solid transparent;
+  border-radius: 50%;
+  box-sizing: border-box;
+}
+
+.loader-outer {
+  width: 100%;
+  height: 100%;
+  border-top-color: #2196f3;
+  animation: spin 1s linear infinite;
+}
+
+.loader-inner {
+  width: 20px;
+  height: 20px;
+  top: 50%;
+  left: 50%;
+  margin: -10px 0 0 -10px; /* center it */
+  border-bottom-color: #ff0000;
+  animation: spin-reverse 1.5s linear infinite;
+}
+
+@keyframes spin {
+  0%   { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes spin-reverse {
+  0%   { transform: rotate(360deg); }
+  100% { transform: rotate(0deg); }
+}
+
+
+
+
+
+/* 👇 Download dropdown fix */
+.dropdown-content {
+  display: none;
+  position: absolute;
+  top: 40px;    /* drop below the button */
+  right: 0;
+  background-color: #f9f9f9;
+  min-width: 170px;
+  box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
+  z-index: 3000;
+}
+
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+
+.add-field-btn {
+  background: linear-gradient(135deg, #683905, #f80404);
+  color: white;
+  border: none;
+  padding: 6px 10px;
+  font-size: 16px;
+  font-weight: 500;
+  border-radius: 12px;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+  margin-left: 5px;
+}
+
+.add-field-btn:hover {
+  background: linear-gradient(135deg, #3f05df, #0b0125);
+  transform: scale(1.05);
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.3);
+}
+.upload-section,
+  .font-style-group {
+    flex-direction: column;
+    width: 100%;
+  }
+.upload-group {
+  width: 100%;
+  justify-content: space-between;
+  margin-bottom: 6px;
+  display: inline-block;
+}
+
+.styled-upload-btn {
+  background: linear-gradient(135deg, #ce5109, #300c01);
+  color: white;
+  padding: 6px 8px;
+  border: none;
+
+  border-radius: 30px;
+  font-weight: 500;
+  font-size: 13px;
+  cursor: pointer;
+  display: inline-block;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  text-align: center;
+}
+
+.styled-upload-btn:hover {
+  background: linear-gradient(135deg, #0373b4, #035a1d);
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* .file-name {
+  display: inline-block;
+  margin-left: 6px;
+  font-style: normal;
+  font-size: 14px;
+  color: #555;
+} */

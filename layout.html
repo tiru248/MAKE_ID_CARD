@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>ID Card Layout Editor</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}">
+  <script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+</head>
+<body>
+
+<!-- ✅ Toast Message -->
+<div id="toast" style="display: none;
+  position: fixed;
+  top: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(90deg, #4caf50, #2196f3);
+  color: white;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-size: 15px;
+  font-weight: bold;
+  z-index: 9999;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  opacity: 0;
+  transition: opacity 0.4s ease-in-out;
+  pointer-events: none;
+  display: block;
+"></div>
+
+<div class="top-controls">
+
+  <div class="upload-group">
+  <label for="tplInput" class="styled-upload-btn">Upload Template</label>
+  <input type="file" id="tplInput" accept="image/*" style="display: none;">
+  
+</div>
+
+<div class="upload-group">
+  <label for="maskInput" class="styled-upload-btn">Upload Mask</label>
+  <input type="file" id="maskInput" accept="image/*" style="display: none;">
+  
+</div>
+
+
+      <button class="add-field-btn" onclick="addField()">Add Field</button>
+  
+
+
+
+  <input type="color" id="borderColor1" value="#ff0000">
+  <input type="color" id="borderColor2" value="#0000ff">
+
+  <label for="borderThickness">Bdr Thick</label>
+  <input type="number" id="borderThickness" value="6" min="1" max="30">
+
+  <label for="borderRadius">Bdr Radius</label>
+  <input type="number" id="borderRadius" value="20" min="0" max="150">
+  
+  
+  
+  <button id="save">Save Layout</button>
+  
+
+  <button id="previewBtn">Preview</button>
+ <div class="download-sample-group">
+    <button id="downloadBtn">Download Sample</button>
+    <div id="loader">
+  <div class="loader-outer"></div>
+  <div class="loader-inner"></div>
+</div>
+
+  </div>
+  <div class="dropdown">
+    <button class="dropbtn">Download</button>
+    <div class="dropdown-content">
+      <a href="#" id="downloadSheets">Download Sheets</a>
+      <a href="#" id="downloadCards">Download Cards</a>
+    </div>
+  </div>
+
+
+
+   
+
+
+</div>
+
+
+
+
+
+
+</div>
+
+
+
+<!-- 📂 Upload Row -->
+<style>
+  .upload-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.custom-file-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  background: #f9f9f9;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+}
+
+.upload-label {
+  background: #097777ff;
+  color: white;
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 500
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.upload-label:hover {
+  background: #083775ff;
+}
+
+.custom-file-group input[type="file"] {
+  display: none;
+}
+
+.custom-file-group .file-name {
+  font-size: 14px;
+  color: #333;
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.custom-file-group button {
+  padding: 6px 10px;
+  font-size: 14px;
+  border: none;
+  border-radius: 4px;
+  background-color: #e0e0e0;
+  cursor: pointer;
+}
+
+.custom-file-group button:hover {
+  background-color: #d0d0d0;
+}
+
+</style>
+
+<div class="upload-row">
+  <!-- 📁 Upload Photos Folder -->
+  <!-- 📁 Photos Upload Section -->
+<form id="uploadForm" method="POST" enctype="multipart/form-data" class="custom-file-group">
+  <label for="photoUpload" class="upload-label">Choose Photos</label>
+  <input type="file" name="photos[]" id="photoUpload" webkitdirectory directory multiple>
+  <span class="file-name" id="photoUploadName">No folder chosen</span>
+  <button type="submit">Upload</button>
+  <button type="button" onclick="deleteAllPhotos()">🗑️ Delete</button>
+</form>
+
+<!-- 📄 CSV Upload Section -->
+<form id="csvUploadForm" enctype="multipart/form-data" class="custom-file-group">
+  <label for="csvInput" class="upload-label">Choose CSV</label>
+  <input type="file" name="csv" id="csvInput" accept=".csv">
+  <span class="file-name" id="csvInputName">No file chosen</span>
+  <button type="submit">Upload</button>
+  <button type="button" id="deleteBtn">❌ Delete</button>
+</form>
+
+</div>
+
+<!-- 📄 Preview Container -->
+<div id="pdfPreviewContainer" style="display:none;">
+  <button id="closePreview" style="position:absolute; top:8px; right:8px; z-index:1001; background:#f00; color:#fff; border:none; padding:6px 10px; border-radius:4px;">❌</button>
+  <iframe id="pdfPreview" style="width:100%; height:100vh; border:none;"></iframe>
+</div>
+
+<!-- 🖼️ Layout & Canvas Area -->
+<div class="container">
+  <!-- Left Sidebar -->
+  <div class="sidebar">
+    
+    
+
+    <div class="bold-italic-wrap">
+      <button id="boldBtn" type="button">🅱️ Bold</button>
+      <button id="italicBtn" type="button">𝑰 Italic</button>
+    </div>
+
+    <div class="font-style-group">
+      <label>✏️ Font Size</label>
+      <input type="number" id="fontSize" value="6">
+    </div>
+
+    <label>🎨 Font Color</label>
+    <input type="color" id="fontColor" value="#000000">
+
+    <div class="cmyk-block">
+      <label for="c">C</label><input type="number" id="c" min="0" max="100" value="0">
+      <label for="m">M</label><input type="number" id="m" min="0" max="100" value="0">
+      <label for="y">Y</label><input type="number" id="y" min="0" max="100" value="0">
+      <label for="k">K</label><input type="number" id="k" min="0" max="100" value="100">
+      <div id="cmykColorPreview"></div>
+    </div>
+
+    <label>🅰 Font Family</label>
+    <select id="fontFamily">
+      <option value="arial.ttf">Arial</option>
+      <option value="times.ttf">Times New Roman</option>
+      <option value="cour.ttf">Courier</option>
+    </select>
+
+    <label>📐 Alignment</label>
+    <select id="textAlign">
+      <option value="left">Left</option>
+      <option value="center">Center</option>
+      <option value="right">Right</option>
+    </select>
+  </div>
+
+  <!-- Right Canvas Area -->
+  <div id="canvasArea">
+    <div id="canvas"></div>
+  </div>
+</div>
+
+
+<!-- ✅ JS: Delete & Upload Logic -->
+<script>
+  async function deleteAllPhotos() {
+    if (!confirm("Are you sure you want to delete all photos?")) return;
+
+    const res = await fetch("/delete-photos-all", {
+      method: "POST"
+    });
+
+    const msg = await res.text();
+    showToast(msg); // ✅ Toast instead of alert
+  }
+
+  document.getElementById("uploadForm").onsubmit = async function(e) {
+    e.preventDefault();
+    const formData = new FormData(this);
+
+    const res = await fetch("/upload-photos", {
+      method: "POST",
+      body: formData,
+    });
+
+    const msg = await res.text();
+    showToast(msg); // ✅ Toast instead of alert
+  };
+
+  function showToast(msg) {
+    const toast = document.getElementById("toast");
+    toast.textContent = msg;
+    toast.style.opacity = "1";
+    setTimeout(() => {
+      toast.style.opacity = "0";
+    }, 3000);
+  }
+
+  // 📤 Handle CSV Upload
+  document.getElementById("csvUploadForm").addEventListener("submit", function (event) {
+    event.preventDefault(); // Stop page reload
+
+    const fileInput = document.getElementById("csvInput");
+    if (fileInput.files.length === 0) {
+      alert("Please select a CSV file.");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("csv", fileInput.files[0]);
+
+    fetch("/upload-csv", {
+      method: "POST",
+      body: formData
+    })
+    .then(res => res.json())
+    .then(data => {
+      alert(data.message || data.error);
+    })
+    .catch(err => {
+      alert("Upload failed.");
+      console.error(err);
+    });
+  });
+
+  // ❌ Handle CSV Delete
+  document.getElementById("deleteBtn").addEventListener("click", function () {
+    fetch("/delete-csv", { method: "POST" })  // POST instead of GET
+    .then(res => res.text())
+    .then(msg => {
+      alert("CSV deleted");
+    })
+    .catch(err => {
+      alert("Delete failed.");
+      console.error(err);
+    });
+  });
+</script>
+
+<script>
+  document.querySelector(".dropbtn").addEventListener("click", () => {
+    const menu = document.querySelector(".dropdown-content");
+    menu.style.display = (menu.style.display === "block") ? "none" : "block";
+  });
+</script>
+
+
+<script src="{{ url_for('static', filename='script.js') }}" defer></script>
+
+</body>
+</html>
