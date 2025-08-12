@@ -70,7 +70,8 @@ try:
         layout = json.load(f)
 except:
     layout = {}
-
+def open_browser():
+    webbrowser.open("http://127.0.0.1:5000")
 
 
 def safe_filename(name):
@@ -934,8 +935,7 @@ def create_zip_response(folder_name, zip_filename):
         
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
-
+    app.run()
 
 
 
