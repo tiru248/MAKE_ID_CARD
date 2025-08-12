@@ -74,8 +74,7 @@ try:
         layout = json.load(f)
 except:
     layout = {}
-def open_browser():
-    webbrowser.open("http://127.0.0.1:5000")
+
 
 
 def safe_filename(name):
@@ -83,6 +82,9 @@ def safe_filename(name):
     name = re.sub(r'[^\w\-_.]', '_', name)
     return name
 
+@app.route("/")
+def home():
+    return "Hello from Flask on Render!"
 
 
 @app.route("/")
@@ -939,7 +941,10 @@ def create_zip_response(folder_name, zip_filename):
         as_attachment=True
     )
 
-        
+if __name__ == "__main__":
+    # Use Render's PORT environment variable
+    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 10000)))
+   
 
 
 
