@@ -3,3 +3,4 @@ gunicorn
 opencv-python-headless
 numpy
 Pillow
+beautifulsoup4
