@@ -1,5 +1,3 @@
-
-import webbrowser
 import os, json, csv, re, io, zipfile
 from flask import Flask, render_template, request, jsonify, send_file, redirect, url_for, send_from_directory
 from flask import request, redirect, url_for, jsonify
@@ -82,9 +80,9 @@ def safe_filename(name):
     name = re.sub(r'[^\w\-_.]', '_', name)
     return name
 
-@app.route("/")
-def home():
-    return "Hello from Flask on Render!"
+@app.route('/')
+def hello():
+    return "Hello from Render!"
 
 
 @app.route("/")
