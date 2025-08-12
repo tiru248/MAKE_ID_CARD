@@ -9,4 +9,5 @@ COPY . /app
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
-CMD ["sh", "-c", "gunicorn --bind 0.0.0.0:$PORT app:app"]
+# For render, set to port 80 if required
+CMD ["sh", "-c", "gunicorn --bind 0.0.0.0:80 app:app"]

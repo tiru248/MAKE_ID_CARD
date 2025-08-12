@@ -1,6 +1,5 @@
 
 import webbrowser
-import threading
 import os, json, csv, re, io, zipfile
 from flask import Flask, render_template, request, jsonify, send_file, redirect, url_for, send_from_directory
 from flask import request, redirect, url_for, jsonify
@@ -23,6 +22,7 @@ from flask import after_this_request
 from werkzeug.utils import secure_filename
 
 
+from flask import Flask
 app = Flask(__name__)
 
 os.environ["NUMBA_DISABLE_CACHE"] = "1"
@@ -941,7 +941,6 @@ def create_zip_response(folder_name, zip_filename):
         as_attachment=True
     )
 
-import os
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
